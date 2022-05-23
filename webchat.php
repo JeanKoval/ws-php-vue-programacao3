@@ -26,11 +26,21 @@ $chatComponent = new class implements MessageComponentInterface {
 
     public function onMessage(ConnectionInterface $from, $msg) 
     {
-        echo "Evento on message" . PHP_EOL;
-        foreach ($this->connections as $conn) {
-            if ($conn !== $from) {
-                $conn->send($msg);
-            }
+        if(empty($msg)) exit;
+
+        $indexFrom = array_search($from, $this->connections->toArray());
+        if($indexFrom % 2 == 0)
+            $indexEnvio = $indexFrom+1;
+        else
+            $indexEnvio = $indexFrom-1;
+        
+        echo 'Evento on message!';
+
+        if(array_key_exists($indexEnvio, $this->connections->toArray())){
+            echo "Enviado para Conexão: ". $indexEnvio . PHP_EOL;
+            $this->connections->get($indexEnvio)->send($msg);
+        }else{
+            echo "Sem Conexão p/ Envio!!!". PHP_EOL;
         }
     }
 
